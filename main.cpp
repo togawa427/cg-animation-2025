@@ -34,7 +34,8 @@ int mX, mY, mState, mButton;  //マウス座標
 int winW, winH;  //ウィンドウサイズ
 Vec_3D floorPoint[TILE][TILE];  //床頂点
 Vec_3D pPoint[6][4];  //箱頂点
-double bottom = 0.0;
+Vec_3D pPoint2[6][4];  //箱頂点
+double bottom = -300.0;
 double fr = 30.0;
 //テクスチャ生成関数パラメータ
 static double genfunc[][4] = {
@@ -73,7 +74,7 @@ void initGL()
     glutTimerFunc(1000/fr, timer, 0);  //タイマー
     
     //各種設定
-    glClearColor(0.0, 0.3, 0.5, 1.0);  //ウィンドウクリア色の指定（RGBA）
+    glClearColor(0.0, 0.0, 0.0, 1.0);  //ウィンドウクリア(背景)色の指定（RGBA）
     glEnable(GL_DEPTH_TEST);  //デプスバッファの有効化
     glEnable(GL_NORMALIZE);  //ベクトル正規化有効化
     glEnable(GL_BLEND);  //アルファブレンド有効化
@@ -102,36 +103,76 @@ void initGL()
         }
     }
     
-    //箱
-    pPoint[0][0].x = -1.0; pPoint[0][0].y = 1.0; pPoint[0][0].z = -1.0;
-    pPoint[0][1].x = 1.0; pPoint[0][1].y = 1.0; pPoint[0][1].z = -1.0;
-    pPoint[0][2].x = 1.0; pPoint[0][2].y = 1.0; pPoint[0][2].z = 1.0;
-    pPoint[0][3].x = -1.0; pPoint[0][3].y = 1.0; pPoint[0][3].z = 1.0;
+    //箱1（台）
+    double yOffset = -3.0;
+    double yScale = 1.0;
+    double xOffset = 0.0;
+    double xScale = 5.0;
+    double zOffset = 0.0;
+    double zScale = 1.0;
+    pPoint[0][0].x = -xScale + xOffset; pPoint[0][0].y = yScale + yOffset; pPoint[0][0].z = -zScale + zOffset;
+    pPoint[0][1].x = xScale + xOffset; pPoint[0][1].y = yScale + yOffset; pPoint[0][1].z = -zScale + zOffset;
+    pPoint[0][2].x = xScale + xOffset; pPoint[0][2].y = yScale + yOffset; pPoint[0][2].z = zScale + zOffset;
+    pPoint[0][3].x = -xScale + xOffset; pPoint[0][3].y = yScale + yOffset; pPoint[0][3].z = zScale + zOffset;
     
-    pPoint[1][0].x = 1.0; pPoint[1][0].y = -1.0; pPoint[1][0].z = -1.0;
-    pPoint[1][1].x = -1.0; pPoint[1][1].y = -1.0; pPoint[1][1].z = -1.0;
-    pPoint[1][2].x = -1.0; pPoint[1][2].y = -1.0; pPoint[1][2].z = 1.0;
-    pPoint[1][3].x = 1.0; pPoint[1][3].y = -1.0; pPoint[1][3].z = 1.0;
+    pPoint[1][0].x = xScale + xOffset; pPoint[1][0].y = -yScale + yOffset; pPoint[1][0].z = -zScale + zOffset;
+    pPoint[1][1].x = -xScale + xOffset; pPoint[1][1].y = -yScale + yOffset; pPoint[1][1].z = -zScale + zOffset;
+    pPoint[1][2].x = -xScale + xOffset; pPoint[1][2].y = -yScale + yOffset; pPoint[1][2].z = zScale + zOffset;
+    pPoint[1][3].x = xScale + xOffset; pPoint[1][3].y = -yScale + yOffset; pPoint[1][3].z = zScale + zOffset;
     
-    pPoint[2][0].x = -1.0; pPoint[2][0].y = 1.0; pPoint[2][0].z = 1.0;
-    pPoint[2][1].x = 1.0; pPoint[2][1].y = 1.0; pPoint[2][1].z = 1.0;
-    pPoint[2][2].x = 1.0; pPoint[2][2].y = -1.0; pPoint[2][2].z = 1.0;
-    pPoint[2][3].x = -1.0; pPoint[2][3].y = -1.0; pPoint[2][3].z = 1.0;
+    pPoint[2][0].x = -xScale + xOffset; pPoint[2][0].y = yScale + yOffset; pPoint[2][0].z = zScale + zOffset;
+    pPoint[2][1].x = xScale + xOffset; pPoint[2][1].y = yScale + yOffset; pPoint[2][1].z = zScale + zOffset;
+    pPoint[2][2].x = xScale + xOffset; pPoint[2][2].y = -yScale + yOffset; pPoint[2][2].z = zScale + zOffset;
+    pPoint[2][3].x = -xScale + xOffset; pPoint[2][3].y = -yScale + yOffset; pPoint[2][3].z = zScale + zOffset;
     
-    pPoint[3][0].x = 1.0; pPoint[3][0].y = 1.0; pPoint[3][0].z = -1.0;
-    pPoint[3][1].x = -1.0; pPoint[3][1].y = 1.0; pPoint[3][1].z = -1.0;
-    pPoint[3][2].x = -1.0; pPoint[3][2].y = -1.0; pPoint[3][2].z = -1.0;
-    pPoint[3][3].x = 1.0; pPoint[3][3].y = -1.0; pPoint[3][3].z = -1.0;
+    pPoint[3][0].x = xScale + xOffset; pPoint[3][0].y = yScale + yOffset; pPoint[3][0].z = -zScale + zOffset;
+    pPoint[3][1].x = -xScale + xOffset; pPoint[3][1].y = yScale + yOffset; pPoint[3][1].z = -zScale + zOffset;
+    pPoint[3][2].x = -xScale + xOffset; pPoint[3][2].y = -yScale + yOffset; pPoint[3][2].z = -zScale + zOffset;
+    pPoint[3][3].x = xScale + xOffset; pPoint[3][3].y = -yScale + yOffset; pPoint[3][3].z = -zScale + zOffset;
     
-    pPoint[4][0].x = 1.0; pPoint[4][0].y = 1.0; pPoint[4][0].z = 1.0;
-    pPoint[4][1].x = 1.0; pPoint[4][1].y = 1.0; pPoint[4][1].z = -1.0;
-    pPoint[4][2].x = 1.0; pPoint[4][2].y = -1.0; pPoint[4][2].z = -1.0;
-    pPoint[4][3].x = 1.0; pPoint[4][3].y = -1.0; pPoint[4][3].z = 1.0;
+    pPoint[4][0].x = xScale + xOffset; pPoint[4][0].y = yScale + yOffset; pPoint[4][0].z = zScale + zOffset;
+    pPoint[4][1].x = xScale + xOffset; pPoint[4][1].y = yScale + yOffset; pPoint[4][1].z = -zScale + zOffset;
+    pPoint[4][2].x = xScale + xOffset; pPoint[4][2].y = -yScale + yOffset; pPoint[4][2].z = -zScale + zOffset;
+    pPoint[4][3].x = xScale + xOffset; pPoint[4][3].y = -yScale + yOffset; pPoint[4][3].z = zScale + zOffset;
     
-    pPoint[5][0].x = -1.0; pPoint[5][0].y = 1.0; pPoint[5][0].z = -1.0;
-    pPoint[5][1].x = -1.0; pPoint[5][1].y = 1.0; pPoint[5][1].z = 1.0;
-    pPoint[5][2].x = -1.0; pPoint[5][2].y = -1.0; pPoint[5][2].z = 1.0;
-    pPoint[5][3].x = -1.0; pPoint[5][3].y = -1.0; pPoint[5][3].z = -1.0;
+    pPoint[5][0].x = -xScale + xOffset; pPoint[5][0].y = yScale + yOffset; pPoint[5][0].z = -zScale + zOffset;
+    pPoint[5][1].x = -xScale + xOffset; pPoint[5][1].y = yScale + yOffset; pPoint[5][1].z = zScale + zOffset;
+    pPoint[5][2].x = -xScale + xOffset; pPoint[5][2].y = -yScale + yOffset; pPoint[5][2].z = zScale + zOffset;
+    pPoint[5][3].x = -xScale + xOffset; pPoint[5][3].y = -yScale + yOffset; pPoint[5][3].z = -zScale + zOffset;
+
+    //箱2(壁)
+    zOffset = -5.0;
+    xScale = 5.0;
+    yScale = 5.0;
+    pPoint2[0][0].x = -xScale; pPoint2[0][0].y = yScale; pPoint2[0][0].z = -1.0 + zOffset;
+    pPoint2[0][1].x = xScale; pPoint2[0][1].y = yScale; pPoint2[0][1].z = -1.0 + zOffset;
+    pPoint2[0][2].x = xScale; pPoint2[0][2].y = yScale; pPoint2[0][2].z = 1.0 + zOffset;
+    pPoint2[0][3].x = -xScale; pPoint2[0][3].y = yScale; pPoint2[0][3].z = 1.0 + zOffset;
+    
+    pPoint2[1][0].x = xScale; pPoint2[1][0].y = -yScale; pPoint2[1][0].z = -1.0 + zOffset;
+    pPoint2[1][1].x = -xScale; pPoint2[1][1].y = -yScale; pPoint2[1][1].z = -1.0 + zOffset;
+    pPoint2[1][2].x = -xScale; pPoint2[1][2].y = -yScale; pPoint2[1][2].z = 1.0 + zOffset;
+    pPoint2[1][3].x = xScale; pPoint2[1][3].y = -yScale; pPoint2[1][3].z = 1.0 + zOffset;
+    
+    pPoint2[2][0].x = -xScale; pPoint2[2][0].y = yScale; pPoint2[2][0].z = 1.0 + zOffset;
+    pPoint2[2][1].x = xScale; pPoint2[2][1].y = yScale; pPoint2[2][1].z = 1.0 + zOffset;
+    pPoint2[2][2].x = xScale; pPoint2[2][2].y = -yScale; pPoint2[2][2].z = 1.0 + zOffset;
+    pPoint2[2][3].x = -xScale; pPoint2[2][3].y = -yScale; pPoint2[2][3].z = 1.0 + zOffset;
+    
+    pPoint2[3][0].x = xScale; pPoint2[3][0].y = yScale; pPoint2[3][0].z = -1.0 + zOffset;
+    pPoint2[3][1].x = -xScale; pPoint2[3][1].y = yScale; pPoint2[3][1].z = -1.0 + zOffset;
+    pPoint2[3][2].x = -xScale; pPoint2[3][2].y = -yScale; pPoint2[3][2].z = -1.0 + zOffset;
+    pPoint2[3][3].x = xScale; pPoint2[3][3].y = -yScale; pPoint2[3][3].z = -1.0 + zOffset;
+    
+    pPoint2[4][0].x = xScale; pPoint2[4][0].y = yScale; pPoint2[4][0].z = 1.0 + zOffset;
+    pPoint2[4][1].x = xScale; pPoint2[4][1].y = yScale; pPoint2[4][1].z = -1.0 + zOffset;
+    pPoint2[4][2].x = xScale; pPoint2[4][2].y = -yScale; pPoint2[4][2].z = -1.0 + zOffset;
+    pPoint2[4][3].x = xScale; pPoint2[4][3].y = -yScale; pPoint2[4][3].z = 1.0 + zOffset;
+    
+    pPoint2[5][0].x = -xScale; pPoint2[5][0].y = yScale; pPoint2[5][0].z = -1.0 + zOffset;
+    pPoint2[5][1].x = -xScale; pPoint2[5][1].y = yScale; pPoint2[5][1].z = 1.0 + zOffset;
+    pPoint2[5][2].x = -xScale; pPoint2[5][2].y = -yScale; pPoint2[5][2].z = 1.0 + zOffset;
+    pPoint2[5][3].x = -xScale; pPoint2[5][3].y = -yScale; pPoint2[5][3].z = -1.0 + zOffset;
     
     //テクスチャ生成
     glBindTexture(GL_TEXTURE_2D, 0);  //テクスチャ#0
@@ -179,14 +220,25 @@ void display()
     e.y = eDist*sin(eDegX*M_PI/180.0);
     e.z = eDist*cos(eDegX*M_PI/180.0)*cos(eDegY*M_PI/180.0);
     
-    //光源0の配置
+    // //光源0の配置（左右にゆらゆら）
     // GLfloat lightPos0[] = {800.0, 600.0, 400.0, 1.0};  //点光源
     GLfloat lightPos0[4];  //点光源
-    lightPos0[0] = 1200.0*sin(theta);
-    lightPos0[1] = 600.0;
-    lightPos0[2] = 1200.0*cos(theta);
+    lightPos0[0] = 600.0*cos(theta*10);
+    lightPos0[1] = 300.0 + (100*cos(theta*20));   // 奥行き
+    lightPos0[2] = 1050.0 + abs(400*sin(theta*20));  // 高さ
     lightPos0[3] = 1.0;
     theta += 0.01;
+    
+    //光源0の配置（ぐるぐる）
+    // // GLfloat lightPos0[] = {800.0, 600.0, 400.0, 1.0};  //点光源
+    // GLfloat lightPos0[4];  //点光源
+    // double r = 500.0;
+    // lightPos0[0] = r*cos(theta*5); // 左右
+    // lightPos0[1] = 500;   // 高さ
+    // lightPos0[2] = 1000.0 + (r*sin(theta*5));  // 奥行き
+    // // lightPos0[2] = 1000;
+    // lightPos0[3] = 1.0;
+    // theta += 0.01;
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);  //光源座標
     
@@ -287,7 +339,7 @@ void scene()
     
     //床面
     //色の設定
-    col[0] = 0.8; col[1] = 0.8; col[2] = 0.2; col[3] = 1.0;  //拡散反射係数
+    col[0] = 0.9; col[1] = 0.9; col[2] = 0.9; col[3] = 1.0;  //拡散反射係数
     spe[0] = 1.0; spe[1] = 1.0; spe[2] = 1.0; spe[3] = 1.0;  //鏡面反射係数
     shi[0] = 100.0;  //ハイライト係数
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射
@@ -322,7 +374,7 @@ void scene()
     
     glEnable(GL_ALPHA_TEST);  //アルファテスト有効化
     
-    //箱の描画
+    //箱1の描画
     //色
     col[0] = 0.5; col[1] = 0.5; col[2] = 1.0;
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
@@ -330,7 +382,7 @@ void scene()
     glPushMatrix();  //行列一時保存
     glTranslated(0.0, 110.0, 0.0);  //平行移動
     glScaled(100.0, 100.0, 100.0);  //拡大
-    //6面
+    //6面体の箱
     for (int i=0; i<6; i++) {
         glBegin(GL_QUADS);
         //法線ベクトル計算
@@ -353,28 +405,639 @@ void scene()
         glEnd();  //配置終了
     }
     glPopMatrix();  //一時保存行列復帰
-    
-    //球の描画
+
+    //箱2の描画
     //色
     col[0] = 1.0; col[1] = 1.0; col[2] = 1.0;
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
     glPushMatrix();  //行列一時保存
-    glTranslated(0.0, 300.0, 0.0);  //平行移動
-    glScaled(70.0, 70.0, 70.0);  //拡大
-    glutSolidSphere(1.0, 36, 18);
+    glTranslated(0.0, 110.0, 0.0);  //平行移動
+    glScaled(100.0, 100.0, 100.0);  //拡大
+    //6面体の箱
+    for (int i=0; i<6; i++) {
+        glBegin(GL_QUADS);
+        //法線ベクトル計算
+        //辺v1
+        v1.x = pPoint2[i][3].x-pPoint2[i][0].x;
+        v1.y = pPoint2[i][3].y-pPoint2[i][0].y;
+        v1.z = pPoint2[i][3].z-pPoint2[i][0].z;
+        //辺v2
+        v2.x = pPoint2[i][1].x-pPoint2[i][0].x;
+        v2.y = pPoint2[i][1].y-pPoint2[i][0].y;
+        v2.z = pPoint2[i][1].z-pPoint2[i][0].z;
+        normcrossprod(v1, v2, &nv);  //v1とv2の外積nv
+        glNormal3d(nv.x, nv.y, nv.z);  //法線ベクトル設定
+        
+        glVertex3d(pPoint2[i][0].x, pPoint2[i][0].y, pPoint2[i][0].z);  //頂点座標
+        glVertex3d(pPoint2[i][1].x, pPoint2[i][1].y, pPoint2[i][1].z);  //頂点座標
+        glVertex3d(pPoint2[i][2].x, pPoint2[i][2].y, pPoint2[i][2].z);  //頂点座標
+        glVertex3d(pPoint2[i][3].x, pPoint2[i][3].y, pPoint2[i][3].z);  //頂点座標
+        
+        glEnd();  //配置終了
+    }
     glPopMatrix();  //一時保存行列復帰
-
-    //球の描画
+    
+    //球1の描画
     //色
+    // col[0] = 1.0; col[1] = 1.0; col[2] = 1.0;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // glTranslated(0.0, 300.0, 0.0);  //平行移動
+    // glScaled(70.0, 70.0, 70.0);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    //球2の描画
+    //色
+    // col[0] = 1.0; col[1] = 1.0; col[2] = 0.0;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // glTranslated(300.0*sin(theta), 40.0, 0.0);  //玉を平行移動で動かしている
+    // glScaled(40.0, 40.0, 40.0);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    //球3の描画
+    //色
+    // col[0] = 1.0; col[1] = 0; col[2] = 0.0;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // glTranslated(300.0*sin(theta*2), 40.0, 0.0);  //玉を平行移動で動かしている
+    // glScaled(40.0, 40.0, 40.0);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    //電球の描画
+    // col[0] = 1.0; col[1] = 1.0; col[2] = 0.0;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // glTranslated(600.0*cos(theta*10), 100.0 + (100*cos(theta*20)), 150.0 + (abs(400*sin((theta*5))))); // 位置指定
+    // glScaled(60.0, 50.0, 60.0);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
     col[0] = 1.0; col[1] = 1.0; col[2] = 0.0;
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // glTranslated(300*cos(theta*5), 300.0, 500+(300*sin(theta*5))); // 位置指定
+    // glScaled(60.0, 50.0, 60.0);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+
+    // ==============Robot1======================
+    col[0] = 0.0; col[1] = 0.0; col[2] = 1.0;
+    // 胴体
+    //球1の描画
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
     glPushMatrix();  //行列一時保存
-    glTranslated(300.0*sin(theta*2), 40.0, 0.0);  //平行移動
-    glScaled(40.0, 40.0, 40.0);  //拡大
+    double xOffset = 0.0;
+    double yOffset = -80.0;
+    double zOffset = 0.0;
+    double tamaScale = 1.0;
+    glTranslated(0.0+xOffset, 0.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(60.0*tamaScale, 50.0*tamaScale, 60.0*tamaScale);  //拡大
     glutSolidSphere(1.0, 36, 18);
     glPopMatrix();  //一時保存行列復帰
+
+    //球2の描画
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.6;
+    glTranslated(0.0+xOffset, 70.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(60.0*tamaScale, 50.0*tamaScale, 60.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // 球3の描画
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.6;
+    glTranslated(0.0+xOffset, 120.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(60.0*tamaScale, 50.0*tamaScale, 60.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // 球4の描画
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 1.0;
+    glTranslated(0.0+xOffset, 170.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(60.0*tamaScale, 40.0*tamaScale, 60.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // 球5の描画
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 1.3;
+    glTranslated(0.0+xOffset, 250.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(60.0*tamaScale, 40.0*tamaScale, 60.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // 球5の描画
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.8;
+    glTranslated(0.0+xOffset, 320.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // // 球5の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 0.8;
+    // glTranslated(0.0+xOffset, 360.0+yOffset, 25.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // // 球6の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 0.8;
+    // glTranslated(20.0+xOffset, 360.0+yOffset, 60.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // // 球6の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 0.8;
+    // glTranslated(40.0+xOffset, 350.0+yOffset, 80.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // // 球6の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 0.8;
+    // glTranslated(40.0+xOffset, 350.0+yOffset, 130.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 25.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // // 球6の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 1.2;
+    // glTranslated(40.0+xOffset, 340.0+yOffset, 150.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 20.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // // 球6の描画
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    // glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    // glPushMatrix();  //行列一時保存
+    // yOffset = -80.0;
+    // zOffset = 0.0;
+    // tamaScale = 1.8;
+    // glTranslated(40.0+xOffset, 320.0+yOffset, 180.0+zOffset); // 位置指定
+    // glScaled(40.0*tamaScale, 40.0*tamaScale, 20.0*tamaScale);  //拡大
+    // glutSolidSphere(1.0, 36, 18);
+    // glPopMatrix();  //一時保存行列復帰
+
+    // 右腕
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-70.0+xOffset, 290.0+yOffset, -20.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-80.0+xOffset, 300.0+yOffset, -35.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-85.0+xOffset, 305.0+yOffset, -45.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-95.0+xOffset, 305.0+yOffset, -48.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-110.0+xOffset, 305.0+yOffset, -48.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-120.0+xOffset, 300.0+yOffset, -48.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-130.0+xOffset, 295.0+yOffset, -45.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-140.0+xOffset, 290.0+yOffset, -35.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-150.0+xOffset, 285.0+yOffset, -30.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-155.0+xOffset, 275.0+yOffset, -20.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-155.0+xOffset, 270.0+yOffset, -5.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-155.0+xOffset, 260.0+yOffset, 5.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-155.0+xOffset, 260.0+yOffset, 20.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-150.0+xOffset, 260.0+yOffset,30.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 45.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-150.0+xOffset, 260.0+yOffset,40.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-145.0+xOffset, 270.0+yOffset,50.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-145.0+xOffset, 280.0+yOffset,60.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(-145.0+xOffset, 290.0+yOffset,70.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    // 左腕
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(70.0+xOffset, 290.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(80.0+xOffset, 305.0+yOffset, -0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(90.0+xOffset, 320.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(100.0+xOffset, 330.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(110.0+xOffset, 340.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(120.0+xOffset, 345.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(130.0+xOffset, 345.0+yOffset, 0.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(140.0+xOffset, 345.0+yOffset, -5.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(140.0+xOffset, 343.0+yOffset, -10.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(150.0+xOffset, 340.0+yOffset, -15.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(160.0+xOffset, 335.0+yOffset, -20.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(170.0+xOffset, 330.0+yOffset, -30.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(180.0+xOffset, 315.0+yOffset, -40.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(180.0+xOffset, 300.0+yOffset, -65.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(175.0+xOffset, 285.0+yOffset, -80.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(170.0+xOffset, 275.0+yOffset, -95.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(165.0+xOffset, 270.0+yOffset, -110.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, col);  //拡散反射係数
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, col);  //環境光係数
+    glPushMatrix();  //行列一時保存
+    yOffset = -80.0;
+    zOffset = 0.0;
+    tamaScale = 0.5;
+    glTranslated(155.0+xOffset, 265.0+yOffset, -120.0+zOffset); // 位置指定
+    glScaled(40.0*tamaScale, 40.0*tamaScale, 40.0*tamaScale);  //拡大
+    glutSolidSphere(1.0, 36, 18);
+    glPopMatrix();  //一時保存行列復帰
+
+
+    // ==========================================
     
     //glDisable(GL_ALPHA_TEST); //アルファテスト無効化
 }
@@ -386,7 +1049,7 @@ void reshape(int w, int h)
     //投影変換の設定
     glMatrixMode(GL_PROJECTION);  //変換行列の指定（設定対象は投影変換行列）
     glLoadIdentity();  //行列初期化
-    gluPerspective(30.0, (double)w/(double)h, 100.0, 5000.0);  //透視投影ビューボリューム設定
+    gluPerspective(30.0, (double)w/(double)h, 100.0, 2500.0);  //透視投影ビューボリューム設定
     
     winW = w; winH = h;  //ウィンドウサイズ格納
 }
